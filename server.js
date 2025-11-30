@@ -12,7 +12,31 @@ const CWA_API_KEY = process.env.CWA_API_KEY;
 
 // === 1. 資安設定 ===
 app.use(helmet()); // 設定 HTTP 安全標頭
-app.use(cors());   // 實際部屬建議設定 origin 白名單: { origin: 'https://your-domain.com' }
+// app.use(cors());   // 實際部屬建議設定 origin 白名單: { origin: 'https://your-domain.com' }
+
+// === CORS 白名單設定 ===
+const whitelist = [
+  'http://localhost:3000',      // 本機開發環境
+  'http://127.0.0.1:5500',      // 如果您用 VSCode Live Server
+  'https://cwa-weather-a4.zeabur.app', // ★重要：請換成您實際部署在 Zeabur 的網址
+  'https://wang-yi-zhang.github.io'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // !origin 表示沒有來源標頭的請求 (例如 Postman 或 Server-to-Server)，通常允許通過
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log("被 CORS 阻擋的來源:", origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST'], // 限制只能使用 GET 和 POST 方法
+  allowedHeaders: ['Content-Type', 'Authorization'] // 限制允許的標頭
+};
+
+app.use(cors(corsOptions));
 
 // 速率限制: 15分鐘內每 IP 只能呼叫 100 次
 const limiter = rateLimit({
