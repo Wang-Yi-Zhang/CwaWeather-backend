@@ -152,8 +152,8 @@ app.get("/api/weather/week", async (req, res) => {
     const response = await axios.get(apiUrl, {
       params: {
         Authorization: CWA_API_KEY,
-        locationName: targetCity,
-        elementName: "Wx,PoP12h,T,RH,WS", // 天氣, 降雨機率, 溫度, 相對濕度, 風速
+        LocationName: targetCity,
+        ElementName: "Wx,PoP12h,T,RH,WS", // 天氣, 降雨機率, 溫度, 相對濕度, 風速
         sort: "time"
       }
     });
@@ -167,14 +167,14 @@ app.get("/api/weather/week", async (req, res) => {
     
     // 整理天氣數據
     // 我們以第一個元素(Wx)的時間軸為基準
-    const timeSlots = rawElements.find(e => e.elementName === "Wx").time;
+    const timeSlots = rawElements.find(e => e.ElementName === "Wx").time;
     
     const formattedForecasts = timeSlots.map((slot, index) => {
         const startTime = new Date(slot.startTime);
         
         // 取得該時段對應的各項數值
         const getVal = (name) => {
-            const el = rawElements.find(e => e.elementName === name);
+            const el = rawElements.find(e => e.ElementName === name);
             // 需注意不同元素的時間切分可能略有不同，這裡做簡單對應 (假設索引一致或相近)
             // 嚴謹作法應比對 startTime，但 F-D0047-091 結構通常是對齊的
             return el?.time[index]?.elementValue[0]?.value || "-";
