@@ -48,6 +48,10 @@ app.use("/api/", limiter);
 
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    res.send('API 服務運作中。請前往 GitHub Pages 操作介面。');
+});
+
 // === 2. 靜態資料與工具函數 ===
 
 // 簡易版地理中心點 (用於將 GPS 轉換為縣市)
