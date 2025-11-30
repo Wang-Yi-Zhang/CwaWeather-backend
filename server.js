@@ -179,14 +179,26 @@ app.get("/api/weather/week", async (req, res) => {
     // 5. 補充日出日落 (計算未來 7 天)
     const dailyAstro = [];
     const today = new Date();
+    // 定義台灣時間格式選項
+    const twTimeOptions = {
+        timeZone: "Asia/Taipei", // ★ 強制指定台灣時區
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+    };
+
     for(let i=0; i<7; i++) {
         const d = new Date();
         d.setDate(today.getDate() + i);
+        
+        // SunCalc 算出的是 UTC 時間物件
         const times = SunCalc.getTimes(d, targetLat, targetLon);
+        
+        // 透過 toLocaleTimeString 轉成台灣時間字串
         dailyAstro.push({
             date: d.toISOString().split('T')[0],
-            sunrise: times.sunrise.toLocaleTimeString('zh-TW', {hour: '2-digit', minute:'2-digit', hour12: false}),
-            sunset: times.sunset.toLocaleTimeString('zh-TW', {hour: '2-digit', minute:'2-digit', hour12: false})
+            sunrise: times.sunrise.toLocaleTimeString("zh-TW", twTimeOptions),
+            sunset: times.sunset.toLocaleTimeString("zh-TW", twTimeOptions)
         });
     }
 
